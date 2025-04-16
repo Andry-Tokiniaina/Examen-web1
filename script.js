@@ -20,6 +20,41 @@ const words = {
     hard: ["synchronize", "complicated", "development", "extravagant", "misconception"]
 };
 
+
+// Calculate the accuracy
+const calcAcc = (inputValue,word) => {
+    let longer
+    let shorter
+    if (inputValue.length>=word.length) {
+        longer=inputValue.length
+        shorter=word.length
+    }else{
+        longer=word.length
+        shorter=inputValue.length
+    }
+    let correct=0
+
+    for (let i = 0; i < shorter; i++) {
+        const char = word[i];
+        const chartyped=inputValue[i]
+
+        if (char==chartyped) {
+            correct+=1
+        }
+    }
+    return (correct/longer)*100
+}
+// Calculate the average
+function average(tab) {
+    
+    let sum=0
+    for (let numb of tab) {
+        numb=Number(numb)
+        sum+=numb
+    }
+    
+    return ((sum)/(tab.length))
+}
 // Generate a random word from the selected mode
 const getRandomWord = (mode) => {
     const wordList = words[mode];
@@ -58,28 +93,29 @@ const startTimer = () => {
 const getCurrentStats = () => {
     const elapsedTime = (Date.now() - previousEndTime) / 1000; // Seconds
     const wpm = (wordsToType[currentWordIndex].length / 5) / (elapsedTime / 60); // 5 chars = 1 word
-    const accuracy = (wordsToType[currentWordIndex].length / inputField.value.length) * 100;
+    const accuracy = calcAcc(wordsToType[currentWordIndex], inputField.value);
 
     return { wpm: wpm.toFixed(2), accuracy: accuracy.toFixed(2) };
 };
 
 // Move to the next word and update stats only on spacebar press
 const updateWord = (event) => {
-    if (event.key === " ") { // Check if spacebar is pressed
-        if (inputField.value.trim() === wordsToType[currentWordIndex]) {
+    if (event.key === " ") {
+        if(inputField.value.trim()!=""){
             if (!previousEndTime) previousEndTime = startTime;
 
-            const { wpm, accuracy } = getCurrentStats();
-            results.textContent = `WPM: ${wpm}, Accuracy: ${accuracy}%`;
+                const { wpm, accuracy } = getCurrentStats();
+                results.textContent = `WPM: ${wpm}, Accuracy: ${accuracy}%`;
 
-            currentWordIndex++;
-            previousEndTime = Date.now();
-            highlightNextWord();
+                currentWordIndex++;
+                previousEndTime = Date.now();
+                highlightNextWord();
 
-            inputField.value = ""; // Clear input field after space
-            event.preventDefault(); // Prevent adding extra spaces
+                inputField.value = ""; // Clear input field after space
+                event.preventDefault(); // Prevent adding extra spaces
         }
-    }
+    } // Check if spacebar is pressed
+            
 };
 
 // Highlight the current word in red
